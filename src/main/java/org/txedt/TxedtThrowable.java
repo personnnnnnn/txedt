@@ -18,7 +18,7 @@ public class TxedtThrowable extends Exception {
         // TODO: implement nicer error logging
         String str = bounds == null
                 ? "unknown location: "
-                : "file " + bounds.start().fileName + " line " + (bounds.start().ln + 1) + ": ";
-        return msg;
+                : "file " + bounds.start().fileName + ", line " + (bounds.start().ln + 1) + ": ";
+        return str + msg;
     }
 }

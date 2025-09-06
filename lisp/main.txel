@@ -1,0 +1,15 @@
+(fn range (&optional min max func)
+    (unless (given min) (var min 0))
+    (var i min)
+    (loop
+        (unless (< i max) (return))
+        (func i)
+        (set i (1+ i))))
+
+(range 2 5 (fn (i)
+    (print (* 2 i))))
+
+(print "")
+
+(range -3 4 (fn (i)
+    (print (* 2 i))))

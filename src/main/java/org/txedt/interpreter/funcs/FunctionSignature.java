@@ -34,6 +34,13 @@ public class FunctionSignature {
     }
 
     public FunctionSignature arg(ArgType type, String name) {
+        for (var arg : args) {
+            if (arg.name().equals(name)) {
+                fucked = true;
+                return this;
+            }
+        }
+
         if (type == ArgType.Rest) {
             if (hasRest) {
                 fucked = true;

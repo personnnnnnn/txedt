@@ -19,12 +19,18 @@ public abstract class GenOp extends FunctionValue {
     }
 
     public abstract Object op(Object a, Object b) throws TxedtThrowable;
+    public Object single(Object x) throws TxedtThrowable {
+        return x;
+    }
 
     @Override
     public @Nullable Object callFn(@NotNull Map<String, Object> args) throws TxedtThrowable {
         var x = args.get("x");
         if (!(args.get("xs") instanceof List<?> xs)) {
             throw new TxedtError(null, "internal error");
+        }
+        if (xs.isEmpty()) {
+            return single(x);
         }
         var acc = x;
         for (var val : xs) {

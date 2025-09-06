@@ -1,6 +1,5 @@
 package org.txedt.interpreter.std.ops;
 
-import org.txedt.TxedtError;
 import org.txedt.TxedtThrowable;
 import org.txedt.interpreter.std.general.TrueValue;
 
@@ -8,12 +7,12 @@ public class NeqSign extends AccOp {
     @Override
     public Object op(Object a, Object b) throws TxedtThrowable {
         if (a == null) {
-            return b != null;
+            return b != null ? TrueValue.tru : null;
         }
         if (b == null) {
-            return true;
+            return TrueValue.tru;
         }
-        return !a.equals(b);
+        return a.equals(b) ? null : TrueValue.tru;
     }
 
     @Override

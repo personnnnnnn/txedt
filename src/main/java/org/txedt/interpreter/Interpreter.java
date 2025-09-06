@@ -69,4 +69,42 @@ public class Interpreter {
         }
         throw new TxedtThrowable(l.children.getFirst().bounds, "cannot call a value of type " + fn.getClass().getSimpleName());
     }
+
+    // exec assumes that no return will have the target "", and instead will put null
+    // this means that this will be skipped
+    public static @Nullable Object exec(@NotNull List<Node> nodes, @NotNull Context context) throws TxedtThrowable {
+        return exec(nodes, context, "");
+    }
+
+    public static @Nullable Object exec(@NotNull List<Node> nodes, @NotNull Context context, @Nullable String targetName) throws TxedtThrowable {
+        if (nodes.isEmpty()) {
+            return null;
+        }
+
+        for (int i = 0; i < nodes.size() - 1; i++) {
+            try {
+                Interpreter.eval(nodes.get(i), context);
+            } catch (ReturnError e) {
+                boolean matchesTarget = targetName == null || e.target != null && e.target.equals(targetName);
+                if (matchesTarget) {
+                    return e.returnValue;
+                } else {
+                    throw e;
+                }
+            }
+        }
+
+        try {
+            return Interpreter.eval(nodes.getLast(), context);
+        } catch (ReturnError e) {
+            boolean matchesTarget = targetName == null
+                    ? e.target == null
+                    : e.target != null && e.target.equals(targetName);
+            if (matchesTarget) {
+                return e.returnValue;
+            } else {
+                throw e;
+            }
+        }
+    }
 }

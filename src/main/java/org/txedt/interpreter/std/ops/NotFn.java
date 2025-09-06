@@ -2,7 +2,6 @@ package org.txedt.interpreter.std.ops;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.txedt.TxedtError;
 import org.txedt.TxedtThrowable;
 import org.txedt.interpreter.funcs.ArgType;
 import org.txedt.interpreter.funcs.FunctionSignature;

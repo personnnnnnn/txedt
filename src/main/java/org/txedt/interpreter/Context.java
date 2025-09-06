@@ -44,4 +44,26 @@ public class Context {
         }
         return vars.get(name);
     }
+
+    public boolean exists(@NotNull String name) {
+        if (vars.containsKey(name)) {
+            return true;
+        }
+        if (parent == null) {
+            return false;
+        }
+        return parent.exists(name);
+    }
+
+    public boolean has(@NotNull String name) {
+        return vars.containsKey(name);
+    }
+
+    public void putFrom(@NotNull Context context) {
+        vars.putAll(context.vars);
+    }
+
+    public void putFrom(@NotNull Map<String, Object> vars) {
+        this.vars.putAll(vars);
+    }
 }

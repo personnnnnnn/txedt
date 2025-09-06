@@ -37,7 +37,7 @@ public class Position {
 
     public void step() {
         col++;
-        if (Utils.newlineAt(fileText, idx++)) {
+        if (fileText.charAt(idx++) == '\n') {
             ln++;
             col = 0;
         }
@@ -45,5 +45,10 @@ public class Position {
 
     public char getChar() {
         return idx >= fileText.length() ? '\0' : fileText.charAt(idx);
+    }
+
+    @Override
+    public String toString() {
+        return "file '" + this.fileName + "', idx " + idx + ", line " + ln + ", col " + col;
     }
 }

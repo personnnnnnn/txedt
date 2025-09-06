@@ -6,7 +6,6 @@ import org.txedt.TxedtThrowable;
 import org.txedt.interpreter.Context;
 import org.txedt.interpreter.Interpreter;
 import org.txedt.interpreter.macros.MacroValue;
-import org.txedt.interpreter.std.controlFlow.PrognMacro;
 import org.txedt.parser.nodes.ListNode;
 import org.txedt.parser.nodes.SymbolNode;
 
@@ -41,6 +40,6 @@ public class LetMacro extends MacroValue {
             }
         }
 
-        return PrognMacro.exec(args.children.subList(2, args.children.size()), newCtx);
+        return Interpreter.exec(args.children.subList(2, args.children.size()), newCtx);
     }
 }

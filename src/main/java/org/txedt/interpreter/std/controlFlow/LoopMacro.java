@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.txedt.TxedtThrowable;
 import org.txedt.interpreter.Context;
+import org.txedt.interpreter.Interpreter;
 import org.txedt.interpreter.ReturnError;
 import org.txedt.interpreter.macros.MacroValue;
 import org.txedt.parser.nodes.ListNode;
@@ -18,7 +19,7 @@ public class LoopMacro extends MacroValue {
 
         while (true) {
             try {
-                PrognMacro.exec(rest, ctx);
+                Interpreter.exec(rest, ctx);
             } catch (ReturnError e) {
                 if (e.target == null) {
                     return e.returnValue;

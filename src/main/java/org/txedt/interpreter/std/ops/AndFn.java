@@ -1,6 +1,5 @@
 package org.txedt.interpreter.std.ops;
 
-import org.txedt.TxedtError;
 import org.txedt.TxedtThrowable;
 import org.txedt.interpreter.std.general.TrueValue;
 

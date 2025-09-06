@@ -19,7 +19,7 @@ public class WhenMacro extends MacroValue {
             throw new TxedtError(args.bounds, "expected condition, found nothing");
         }
         if (Interpreter.eval(args.children.get(1), ctx) != null) {
-            return PrognMacro.exec(args.children.subList(2, args.children.size()), ctx);
+            return Interpreter.exec(args.children.subList(2, args.children.size()), ctx);
         } else {
             return null;
         }
