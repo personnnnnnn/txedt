@@ -25,6 +25,6 @@ public class Minus1Fn extends FunctionValue {
         if (x instanceof Double d) {
             return d - 1;
         }
-        throw new TxedtThrowable(null, "can only subtract 1 from number");
+        throw new TxedtThrowable(null, "can only subtract 1 from numbers");
     }
 }

@@ -39,6 +39,6 @@ public class ModFn extends GenOp {
             }
         }
 
-        throw new TxedtError(null, "can only add numbers");
+        throw new TxedtError(null, "can only mod numbers");
     }
 }

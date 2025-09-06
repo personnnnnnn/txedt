@@ -25,6 +25,6 @@ public class Plus1Fn extends FunctionValue {
         if (x instanceof Double d) {
             return d + 1;
         }
-        throw new TxedtThrowable(null, "can only add 1 to number");
+        throw new TxedtThrowable(null, "can only add 1 to numbers");
     }
 }

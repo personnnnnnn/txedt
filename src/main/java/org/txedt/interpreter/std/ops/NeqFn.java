@@ -3,7 +3,7 @@ package org.txedt.interpreter.std.ops;
 import org.txedt.TxedtThrowable;
 import org.txedt.interpreter.std.general.TrueValue;
 
-public class NeqSign extends AccOp {
+public class NeqFn extends AccOp {
     @Override
     public Object op(Object a, Object b) throws TxedtThrowable {
         if (a == null) {
@@ -20,6 +20,6 @@ public class NeqSign extends AccOp {
         return a != null && b != null;
     }
 
-    public static NeqSign func = new NeqSign();
-    private NeqSign() { }
+    public static NeqFn func = new NeqFn();
+    private NeqFn() { }
 }

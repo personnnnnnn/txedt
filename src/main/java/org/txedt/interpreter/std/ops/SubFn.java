@@ -27,6 +27,6 @@ public class SubFn extends GenOp {
             }
         }
 
-        throw new TxedtError(null, "can only add numbers");
+        throw new TxedtError(null, "can only subtract numbers");
     }
 }

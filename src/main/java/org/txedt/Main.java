@@ -39,6 +39,8 @@ public class Main {
         ctx.put("fn", FnMacro.macro);
         ctx.put("var", VarMacro.macro);
         ctx.put("cat", CatFn.func);
+        ctx.put("min", MinFn.func);
+        ctx.put("max", MaxFn.func);
         ctx.put("prog", ProgMacro.macro);
         ctx.put("progn", PrognMacro.macro);
         ctx.put("ast", AstMacro.macro);
@@ -63,7 +65,7 @@ public class Main {
         ctx.put(">", GtFn.func);
         ctx.put(">=", GteFn.func);
         ctx.put("=", EqFn.func);
-        ctx.put("!=", NeqSign.func);
+        ctx.put("!=", NeqFn.func);
         ctx.put("set", SetMacro.macro);
         ctx.put("loop", LoopMacro.macro);
         ctx.put("and", AndFn.func);
