@@ -16,6 +16,10 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
+        program();
+    }
+
+    public static void program() {
         String file = "./lisp/main.txel";
         StringBuilder text = new StringBuilder();
 
@@ -38,6 +42,7 @@ public class Main {
         ctx.put("input", InputFn.func);
         ctx.put("given", GivenMacro.macro);
         ctx.put("fn", FnMacro.macro);
+        ctx.put("mac", MacroMacro.macro);
         ctx.put("var", VarMacro.macro);
         ctx.put("cat", CatFn.func);
         ctx.put("min", MinFn.func);

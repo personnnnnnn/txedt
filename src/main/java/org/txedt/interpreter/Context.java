@@ -15,7 +15,7 @@ import java.util.Set;
 
 public class Context {
     public @Nullable Context parent;
-    private final @NotNull Map<String, Object> vars = new HashMap<>();
+    public final @NotNull Map<String, Object> vars = new HashMap<>();
 
     interface ThingDoer<T, R> {
         R doThing(@NotNull Context ctx, @NotNull String name, @Nullable Bounds bounds, T extra) throws TxedtThrowable;
@@ -181,8 +181,8 @@ public class Context {
     }
 
     private @NotNull String toString(@NotNull Set<Context> contexts) {
-        StringBuilder s = new StringBuilder();
-        String join = "{";
+        StringBuilder s = new StringBuilder("{");
+        String join = "";
         contexts.add(this);
 
         for (var entry : vars.entrySet()) {

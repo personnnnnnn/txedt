@@ -1,14 +1,14 @@
-(fn parse (str)
-    (var failed nil)
-    (var result nil)
-    (var error-message nil)
-    ; ... imagine parser code here ...
-    (package
-        (var ok (not failed))
-        (var value result)
-        (var error error-message)))
+(mac x2 (n)
+    (ast (* 2 ,n)))
 
-(var result (parse (input)))
-(if result:ok
-    (print (cat "Success: " result:value))
-    (print (cat "Failure: " result:error-message)))
+(mac log (&body body)
+    (ast (prog
+        (print "Start")
+        (var x (prog ,@body))
+        (print "End")
+        x)))
+
+; HOW DOES IT WORK FIRST TRY WTF
+
+(print (x2 2))
+(log (print 5) (print 2))

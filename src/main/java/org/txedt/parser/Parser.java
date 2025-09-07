@@ -140,7 +140,7 @@ public class Parser {
         return symbol();
     }
 
-    public @NotNull Node symbol() {
+    public @NotNull Node symbol() throws ParseError {
         Position start = new Position(pos);
 
         StringBuilder symbolSB = new StringBuilder();
@@ -235,8 +235,8 @@ public class Parser {
             throw new ParseError(bounds, "expected ')'");
         }
 
-        Position end = new Position(pos);
         pos.step();
+        Position end = new Position(pos);
         Bounds bounds = new Bounds(start, end);
         return new ListNode(bounds, children);
     }

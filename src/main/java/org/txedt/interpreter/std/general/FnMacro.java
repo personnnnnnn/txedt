@@ -7,7 +7,7 @@ import org.txedt.TxedtThrowable;
 import org.txedt.interpreter.Context;
 import org.txedt.interpreter.funcs.ArgType;
 import org.txedt.interpreter.funcs.FunctionSignature;
-import org.txedt.interpreter.funcs.InternalFunction;
+import org.txedt.interpreter.funcs.UserFunction;
 import org.txedt.interpreter.macros.MacroValue;
 import org.txedt.parser.nodes.ListNode;
 import org.txedt.parser.nodes.Node;
@@ -30,7 +30,7 @@ public class FnMacro extends MacroValue {
             argsI++;
         }
         if (!(args.children.get(argsI) instanceof ListNode arguments)) {
-            throw new TxedtError(args.children.get(2).bounds, "expected function name");
+            throw new TxedtError(args.children.get(2).bounds, "expected arguments");
         }
         argsI++;
         List<Node> rest = args.children.subList(argsI, args.children.size());
@@ -64,7 +64,7 @@ public class FnMacro extends MacroValue {
             argType = ArgType.Normal;
         }
 
-        var fn = new InternalFunction(signature, rest, ctx);
+        var fn = new UserFunction(signature, rest, ctx);
 
         if (args.children.get(1) instanceof SymbolNode symbol) {
             ctx.put(symbol.s, fn);

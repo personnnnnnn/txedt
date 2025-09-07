@@ -42,12 +42,11 @@ here are some:
 (fn x2-func (n)
     (* 2 n))
 
-; not implemented yet but still--
 (mac x2-mac (n)
-    `(* 2 ,n))
+    (ast (* 2 ,n)))
 
 (print (x2-func 2)) ; 2
-(print (x2-mac 2)) ; 2
+(print (x2-mac 2)) ; 2 (but fancier)
 ```
 
 ### Function recursion and optional parameters
