@@ -1,15 +1,14 @@
-(fn range (&optional min max func)
-    (unless (given min) (var min 0))
-    (var i min)
-    (loop
-        (unless (< i max) (return))
-        (func i)
-        (set i (1+ i))))
+(fn parse (str)
+    (var failed nil)
+    (var result nil)
+    (var error-message nil)
+    ; ... imagine parser code here ...
+    (package
+        (var ok (not failed))
+        (var value result)
+        (var error error-message)))
 
-(range 2 5 (fn (i)
-    (print (* 2 i))))
-
-(print "")
-
-(range -3 4 (fn (i)
-    (print (* 2 i))))
+(var result (parse (input)))
+(if result:ok
+    (print (cat "Success: " result:value))
+    (print (cat "Failure: " result:error-message)))

@@ -37,7 +37,8 @@ public class Position {
 
     public void step() {
         col++;
-        if (fileText.charAt(idx++) == '\n') {
+        if (idx < fileText.length()) idx++;
+        if (fileText.charAt(idx - 1) == '\n') {
             ln++;
             col = 0;
         }

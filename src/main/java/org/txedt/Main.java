@@ -2,6 +2,7 @@ package org.txedt;
 
 import org.txedt.interpreter.Context;
 import org.txedt.interpreter.Interpreter;
+import org.txedt.interpreter.std.contexts.*;
 import org.txedt.interpreter.std.controlFlow.*;
 import org.txedt.interpreter.std.general.*;
 import org.txedt.interpreter.std.ops.*;
@@ -73,6 +74,14 @@ public class Main {
         ctx.put("not", NotFn.func);
         ctx.put("is", IsFn.func);
         ctx.put("isnt", IsntFn.func);
+        ctx.put("current-context", CurrentContextMacro.macro);
+        ctx.put("with-context", WithContextMacro.macro);
+        ctx.put("include-context", IncludeContextMacro.macro);
+        ctx.put("context-parent", ContextParentProperty.property);
+        ctx.put("package", PackageMacro.macro);
+        ctx.put("library", LibraryMacro.macro);
+        ctx.put("export", ExportMacro.macro);
+        ctx.put("cond", CondMacro.macro);
 
         Parser parser = new Parser(file, text.toString());
         try {

@@ -25,6 +25,6 @@ public class VarMacro extends MacroValue {
         var res = args.children.size() == 2
             ? null
             : Interpreter.eval(args.children.getLast(), ctx);
-        return ctx.put(s.s, res);
+        return ctx.putPackage(s.s, args.children.get(1).bounds, res);
     }
 }

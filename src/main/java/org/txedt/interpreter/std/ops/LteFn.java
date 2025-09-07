@@ -27,7 +27,7 @@ public class LteFn extends AccOp {
     }
 
     @Override
-    public Object combine(Object a, Object b) throws TxedtThrowable {
+    public Object combine(Object a, Object b) {
         return a != null && b != null;
     }
 
