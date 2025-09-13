@@ -17,6 +17,10 @@ symbol.
 ###
 ### `(defmac std:var ( (symbol var-name) (optional (expr value)) ))`
 ### `(defmac std:set ( (symbol var-name) (expr value) ))`
+###
+### `(defmac std:prog ( (body stmts) ))`
+### `(defmac std:progn ( (body stmts) ))`
+### `(defmac std:progp ( (body stmts) ))`
 
 ## `io` package
 

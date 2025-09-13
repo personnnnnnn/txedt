@@ -21,7 +21,7 @@ public final class Interpreter {
             case Node.Int i -> i.n;
             case Node.Flt f -> f.n;
             case Node.Str s -> s.s;
-            case Node.Symbol s -> // TODO: implement package access (context:var-name) syntax, 'nil' and 't'
+            case Node.Symbol s -> // TODO: implement package access (context:var-name syntax), 'nil' and 't'
                     callData.context().get(new Backtrace(callData.backtrace(), s.bounds), ContextPrivilege.PRIVATE, s.s);
             case Node.Lst l -> eval(l, callData);
         };
@@ -50,5 +50,15 @@ public final class Interpreter {
             }
             case null, default -> throw new TxedtError(callData.backtrace(), "uncallable value");
         };
+    }
+
+    public static @Nullable Object exec(@NotNull Node.Lst node, CallData callData) throws TxedtThrowable {
+        if (node.children.isEmpty()) {
+            return null;
+        }
+        for (int i = 0; i < node.children.size() - 1; i++) {
+            eval(node.children.get(i), callData);
+        }
+        return eval(node.children.getLast(), callData);
     }
 }

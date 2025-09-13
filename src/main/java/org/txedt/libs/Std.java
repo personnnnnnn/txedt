@@ -131,6 +131,7 @@ public final class Std {
                 }
         ));
 
+
         ctx.put("var", (MacroValue) (callData, args) -> {
             if (args.children.size() != 1 && args.children.size() != 2) {
                 var parent = callData.backtrace().parent() == null ? new Backtrace() : callData.backtrace().parent();
@@ -171,5 +172,13 @@ public final class Std {
             callData.context().set(new Backtrace(callData.backtrace().parent(), symbol.bounds), ContextPrivilege.PRIVATE, symbol.s, value);
             return value;
         });
+
+
+        ctx.put("prog", (MacroValue) (callData, args)
+                -> Interpreter.exec(args, callData));
+        ctx.put("progn", (MacroValue) (callData, args)
+                -> Interpreter.exec(args, new CallData(callData.backtrace(), new Context().parent(callData.context()))));
+        ctx.put("progp", (MacroValue) (callData, args)
+                -> Interpreter.exec(args, new CallData(callData.backtrace(), new Context().param(callData.context()))));
     }
 }

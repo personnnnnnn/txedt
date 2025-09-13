@@ -167,4 +167,17 @@ public sealed interface MacroArgument {
             throw new TxedtError(new Backtrace(backtrace.parent(), list.bounds), "invalid option");
         }
     }
+
+    record Body(@NotNull String name) implements MacroArgument {
+        @Override
+        public int match(int i, Node.@NotNull Lst list, @NotNull Backtrace backtrace, @NotNull Context write) throws TxedtThrowable {
+            if (i >= list.children.size()) {
+                var bounds = new Bounds(list.bounds.end().copy().stepBack(), list.bounds.end().copy());
+                var backt = new Backtrace(backtrace.parent(), bounds);
+                throw new TxedtError(backt, "expected body");
+            }
+            write.put(name, list.children.subList(i, list.children.size()));
+            return list.children.size();
+        }
+    }
 }

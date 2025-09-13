@@ -2,6 +2,7 @@ package org.txedt.parser;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract sealed class Node {
@@ -124,6 +125,17 @@ public abstract sealed class Node {
                 return false;
             }
             return l.children.equals(children);
+        }
+
+        public @NotNull Lst sublist(int start, int end) {
+            if (start >= this.children.size()) {
+                return new Lst(new Bounds(bounds.end().copy().stepBack()), new ArrayList<>());
+            }
+            return new Lst(new Bounds(children.get(start).bounds, children.get(end).bounds), children.subList(start, children.size()));
+        }
+
+        public @NotNull Lst sublist(int start) {
+            return sublist(start, children.size());
         }
     }
 }
