@@ -7,7 +7,9 @@ import org.txedt.contexts.ContextPrivilege;
 import org.txedt.errors.TxedtError;
 import org.txedt.errors.TxedtThrowable;
 import org.txedt.functions.ExternalFunction;
+import org.txedt.functions.FunctionArgumentType;
 import org.txedt.functions.FunctionSignature;
+import org.txedt.functions.UserFunction;
 import org.txedt.interpreter.CallData;
 import org.txedt.interpreter.Interpreter;
 import org.txedt.macros.MacroValue;
@@ -135,12 +137,12 @@ public final class Std {
         ctx.put("var", (MacroValue) (callData, args) -> {
             if (args.children.size() != 1 && args.children.size() != 2) {
                 var parent = callData.backtrace().parent() == null ? new Backtrace() : callData.backtrace().parent();
-                throw new TxedtThrowable(new Backtrace(parent, args.bounds), "expected var name and optionally value");
+                throw new TxedtError(new Backtrace(parent, callData.backtrace().description(), args.bounds), "expected var name and optionally value");
             }
             var i = 0;
             var symbolNode = args.children.get(i++);
             if (!(symbolNode instanceof Node.Symbol symbol)) {
-                throw new TxedtThrowable(new Backtrace(callData.backtrace(), symbolNode.bounds), "expected var name");
+                throw new TxedtError(new Backtrace(callData.backtrace(), symbolNode.bounds), "expected var name");
             }
 
             if (args.children.size() == 1) {
@@ -158,27 +160,86 @@ public final class Std {
         ctx.put("set", (MacroValue) (callData, args) -> {
             if (args.children.size() != 2) {
                 var parent = callData.backtrace().parent() == null ? new Backtrace() : callData.backtrace().parent();
-                throw new TxedtThrowable(new Backtrace(parent, args.bounds), "expected var name and value");
+                throw new TxedtError(new Backtrace(parent, callData.backtrace().description(), args.bounds), "expected var name and value");
             }
             var i = 0;
             var symbolNode = args.children.get(i++);
             if (!(symbolNode instanceof Node.Symbol symbol)) {
-                throw new TxedtThrowable(new Backtrace(callData.backtrace(), symbolNode.bounds), "expected var name");
+                throw new TxedtError(new Backtrace(callData.backtrace(), symbolNode.bounds), "expected var name");
             }
 
             var valueNode = args.children.get(i);
             var parent = callData.backtrace().parent() == null ? new Backtrace() : callData.backtrace().parent();
             var value = Interpreter.eval(valueNode, new CallData(parent, callData.context()));
-            callData.context().set(new Backtrace(callData.backtrace().parent(), symbol.bounds), ContextPrivilege.PRIVATE, symbol.s, value);
+            callData.context().set(callData.backtrace().sameWith(symbol.bounds), ContextPrivilege.PRIVATE, symbol.s, value);
             return value;
         });
 
 
         ctx.put("prog", (MacroValue) (callData, args)
-                -> Interpreter.exec(args, callData));
+                -> Interpreter.exec(args.children, callData));
         ctx.put("progn", (MacroValue) (callData, args)
-                -> Interpreter.exec(args, new CallData(callData.backtrace(), new Context().parent(callData.context()))));
+                -> Interpreter.exec(args.children, new CallData(callData.backtrace(), new Context().parent(callData.context()))));
         ctx.put("progp", (MacroValue) (callData, args)
-                -> Interpreter.exec(args, new CallData(callData.backtrace(), new Context().param(callData.context()))));
+                -> Interpreter.exec(args.children, new CallData(callData.backtrace(), new Context().param(callData.context()))));
+
+
+        ctx.put("defn", (MacroValue) (callData, args) -> {
+            if (args.children.size() < 2) {
+                throw new TxedtError(callData.backtrace().parent(), "expected function name, arguments and body");
+            }
+            var i = 0;
+            var fnNode = args.children.get(i++);
+            if (!(fnNode instanceof Node.Symbol fnSymbol)) {
+                throw new TxedtError(callData.backtrace().sameWith(fnNode.bounds), "expected function name");
+            }
+
+            var argsNode = args.children.get(i++);
+            if (!(argsNode instanceof Node.Lst argList)) {
+                throw new TxedtError(callData.backtrace().sameWith(argsNode.bounds), "expected arguments");
+            }
+            var body = args.children.subList(i, args.children.size());
+
+            var sig = parseArgs(callData.backtrace().sameWith(argList.bounds), argList.children);
+            var fn = new UserFunction(sig, body, callData.context(), fnSymbol.s);
+            callData.context().put(fnSymbol.s, fn);
+            return fn;
+        });
+
+        ctx.put("fn", (MacroValue) (callData, args) -> {
+            if (args.children.isEmpty()) {
+                throw new TxedtError(callData.backtrace().parent(), "arguments and body");
+            }
+            var i = 0;
+
+            var argsNode = args.children.get(i++);
+            if (!(argsNode instanceof Node.Lst argList)) {
+                throw new TxedtError(callData.backtrace().sameWith(argsNode.bounds), "expected arguments");
+            }
+            var body = args.children.subList(i, args.children.size());
+
+            var sig = parseArgs(callData.backtrace().sameWith(argList.bounds), argList.children);
+            return new UserFunction(sig, body, callData.context(), null);
+        });
+    }
+
+    private static @NotNull FunctionSignature parseArgs(@NotNull Backtrace backtrace, @NotNull List<Node> args) throws TxedtError {
+        var sig = new FunctionSignature();
+        var argType = FunctionArgumentType.NORMAL;
+        for (var arg : args) {
+            if (!(arg instanceof Node.Symbol symb)) {
+                throw new TxedtError(backtrace.sameWith(arg.bounds), "expected symbol");
+            }
+            if (symb.s.equals("&optional")) {
+                argType = FunctionArgumentType.OPTIONAL;
+                continue;
+            }
+            if (symb.s.equals("&rest")) {
+                argType = FunctionArgumentType.REST;
+                continue;
+            }
+            sig.dynamic(backtrace.sameWith(arg.bounds), argType, symb.s);
+        }
+        return sig;
     }
 }

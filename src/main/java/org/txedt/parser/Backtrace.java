@@ -1,5 +1,6 @@
 package org.txedt.parser;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,6 +15,16 @@ public record Backtrace(@Nullable Backtrace parent, @Nullable String description
 
     public Backtrace(@Nullable Backtrace parent, @Nullable Bounds bounds) {
         this(parent, null, bounds);
+    }
+
+    @Contract("_ -> new")
+    public @NotNull Backtrace sameWith(@Nullable Bounds bounds) {
+        return new Backtrace(parent, description, bounds);
+    }
+
+    @Contract("_, _ -> new")
+    public @NotNull Backtrace sameWith(@Nullable String description, @Nullable Bounds bounds) {
+        return new Backtrace(parent, description, bounds);
     }
 
     public Backtrace(@Nullable String description, @Nullable Bounds bounds) {
@@ -34,8 +45,8 @@ public record Backtrace(@Nullable Backtrace parent, @Nullable String description
 
     public @NotNull String brief(String prefix) {
         String s = prefix;
-        if (description != null) {
-            s += description + ": ";
+        if (parent != null && parent.description != null) {
+            s += parent.description + ": ";
         }
         if (bounds == null) {
             s += "<unknown location>";

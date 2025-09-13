@@ -1,5 +1,6 @@
 package org.txedt.functions;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.txedt.errors.TxedtError;
@@ -45,6 +46,16 @@ public final class FunctionSignature {
         } catch (TxedtError e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Contract(value = "_, _, _ -> this", pure = true)
+    public FunctionSignature dynamic(@Nullable Backtrace backtrace, @NotNull FunctionArgumentType type, @NotNull String name) throws TxedtError {
+        switch (type) {
+            case NORMAL -> arg(name);
+            case OPTIONAL -> opt(name);
+            case REST -> restFail(backtrace, name);
+        }
+        return this;
     }
 
     public boolean argcMatches(int argc) {

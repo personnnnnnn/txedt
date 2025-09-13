@@ -12,6 +12,7 @@ import org.txedt.parser.Bounds;
 import org.txedt.parser.Node;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public final class Interpreter {
     private Interpreter() { }
@@ -52,13 +53,14 @@ public final class Interpreter {
         };
     }
 
-    public static @Nullable Object exec(@NotNull Node.Lst node, CallData callData) throws TxedtThrowable {
-        if (node.children.isEmpty()) {
+    // TODO: implement 'return'
+    public static @Nullable Object exec(@NotNull List<Node> node, CallData callData) throws TxedtThrowable {
+        if (node.isEmpty()) {
             return null;
         }
-        for (int i = 0; i < node.children.size() - 1; i++) {
-            eval(node.children.get(i), callData);
+        for (int i = 0; i < node.size() - 1; i++) {
+            eval(node.get(i), callData);
         }
-        return eval(node.children.getLast(), callData);
+        return eval(node.getLast(), callData);
     }
 }

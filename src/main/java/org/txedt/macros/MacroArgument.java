@@ -21,7 +21,7 @@ public sealed interface MacroArgument {
         public int match(int i, Node.@NotNull Lst list, @NotNull Backtrace backtrace, @NotNull Context write) throws TxedtThrowable {
             if (i >= list.children.size()) {
                 var bounds = new Bounds(list.bounds.end().copy().stepBack(), list.bounds.end().copy());
-                var backt = new Backtrace(backtrace.parent(), bounds);
+                var backt = backtrace.sameWith(bounds);
                 throw new TxedtError(backt, "expected expression");
             }
             var node = list.children.get(i++);
@@ -35,13 +35,13 @@ public sealed interface MacroArgument {
         public int match(int i, Node.@NotNull Lst list, @NotNull Backtrace backtrace, @NotNull Context write) throws TxedtThrowable {
             if (i >= list.children.size()) {
                 var bounds = new Bounds(list.bounds.end().copy().stepBack(), list.bounds.end().copy());
-                var backt = new Backtrace(backtrace.parent(), bounds);
+                var backt = backtrace.sameWith(bounds);
                 throw new TxedtError(backt, "expected symbol");
             }
             var node = list.children.get(i++);
             if (!(node instanceof Node.Symbol)) {
                 var bounds = node.bounds;
-                var backt = new Backtrace(backtrace.parent(), bounds);
+                var backt = backtrace.sameWith(bounds);
                 throw new TxedtError(backt, "expected symbol");
             }
             write.put(name, node);
@@ -53,14 +53,14 @@ public sealed interface MacroArgument {
         @Override
         public int match(int i, Node.@NotNull Lst list, @NotNull Backtrace backtrace, @NotNull Context write) throws TxedtThrowable {
             if (i >= list.children.size()) {
-                var bounds = new Bounds(list.bounds.end().copy().stepBack(), list.bounds.end().copy());
-                var backt = new Backtrace(backtrace.parent(), bounds);
+                var bounds = new Bounds(list.bounds.end().copy().stepBack());
+                var backt = backtrace.sameWith(bounds);
                 throw new TxedtError(backt, "expected string");
             }
             var node = list.children.get(i++);
             if (!(node instanceof Node.Str)) {
                 var bounds = node.bounds;
-                var backt = new Backtrace(backtrace.parent(), bounds);
+                var backt = backtrace.sameWith(bounds);
                 throw new TxedtError(backt, "expected string");
             }
             write.put(name, node);
@@ -73,13 +73,13 @@ public sealed interface MacroArgument {
         public int match(int i, Node.@NotNull Lst list, @NotNull Backtrace backtrace, @NotNull Context write) throws TxedtThrowable {
             if (i >= list.children.size()) {
                 var bounds = new Bounds(list.bounds.end().copy().stepBack(), list.bounds.end().copy());
-                var backt = new Backtrace(backtrace.parent(), bounds);
+                var backt = backtrace.sameWith(bounds);
                 throw new TxedtError(backt, "expected '" + symbol + "'");
             }
             var node = list.children.get(i++);
             if (!(node instanceof Node.Symbol symb) || !symb.s.equals(symbol)) {
                 var bounds = node.bounds;
-                var backt = new Backtrace(backtrace.parent(), bounds);
+                var backt = backtrace.sameWith(bounds);
                 throw new TxedtError(backt, "expected '" + symbol + "'");
             }
             return i;
@@ -105,13 +105,13 @@ public sealed interface MacroArgument {
         public int match(int i, Node.@NotNull Lst list, @NotNull Backtrace backtrace, @NotNull Context write) throws TxedtThrowable {
             if (i >= list.children.size()) {
                 var bounds = new Bounds(list.bounds.end().copy().stepBack(), list.bounds.end().copy());
-                var backt = new Backtrace(backtrace.parent(), bounds);
+                var backt = backtrace.sameWith(bounds);
                 throw new TxedtError(backt, "expected list");
             }
             var node = list.children.get(i++);
             if (!(node instanceof Node.Lst subList)) {
                 var bounds = node.bounds;
-                var backt = new Backtrace(backtrace.parent(), bounds);
+                var backt = backtrace.sameWith(bounds);
                 throw new TxedtError(backt, "expected list");
             }
             var subI = 0;
@@ -120,7 +120,7 @@ public sealed interface MacroArgument {
             }
             if (subI < subList.children.size()) {
                 var bounds = new Bounds(subList.children.get(subI).bounds, subList.children.getLast().bounds);
-                var backt = new Backtrace(backtrace.parent(), bounds);
+                var backt = backtrace.sameWith(bounds);
                 throw new TxedtError(backt, "expected end of list");
             }
             return i;
@@ -164,7 +164,7 @@ public sealed interface MacroArgument {
                     write.put(opt.checkName(), TxedtBool.fals);
                 }
             }
-            throw new TxedtError(new Backtrace(backtrace.parent(), list.bounds), "invalid option");
+            throw new TxedtError(backtrace.sameWith(list.bounds), "invalid option");
         }
     }
 
@@ -173,7 +173,7 @@ public sealed interface MacroArgument {
         public int match(int i, Node.@NotNull Lst list, @NotNull Backtrace backtrace, @NotNull Context write) throws TxedtThrowable {
             if (i >= list.children.size()) {
                 var bounds = new Bounds(list.bounds.end().copy().stepBack(), list.bounds.end().copy());
-                var backt = new Backtrace(backtrace.parent(), bounds);
+                var backt = backtrace.sameWith(bounds);
                 throw new TxedtError(backt, "expected body");
             }
             write.put(name, list.children.subList(i, list.children.size()));

@@ -1,2 +1,2 @@
-(var x (progn (var a 3) (var b 2) (+ a b)))
-(print x)
+(var f (fn (x) (* 2 x)))
+(print (f 3))

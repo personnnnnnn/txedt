@@ -66,7 +66,7 @@ public final class Parser {
 
         String symbol = sb.toString();
         if (symbol.isEmpty()) {
-            throw new TxedtError(new Backtrace(backtrace.parent(), new Bounds(start)), "expected a symbol");
+            throw new TxedtError(backtrace.sameWith(new Bounds(start)), "expected a symbol");
         }
 
         if (symbol.matches(INT_REGEX)) {
@@ -84,7 +84,7 @@ public final class Parser {
 
     private static @NotNull Node.Lst list(@NotNull Position pos, @NotNull Backtrace backtrace) throws TxedtError {
         if (pos.getChar() != '(') {
-            throw new TxedtError(new Backtrace(backtrace.parent(), new Bounds(pos)), "expected '('");
+            throw new TxedtError(backtrace.sameWith(new Bounds(pos)), "expected '('");
         }
 
         var start = pos.copy();
@@ -94,7 +94,7 @@ public final class Parser {
         skipWhitespace(pos);
         while (pos.getChar() != ')') {
             if (pos.getChar() == '\0') {
-                throw new TxedtError(new Backtrace(backtrace.parent(), new Bounds(pos)), "expected ')'");
+                throw new TxedtError(backtrace.sameWith(new Bounds(pos)), "expected ')'");
             }
             var node = nextNode(pos, backtrace);
             children.add(node);
@@ -111,17 +111,17 @@ public final class Parser {
         var start = pos.copy();
 
         if (pos.getChar() != '"') {
-            throw new TxedtError(new Backtrace(backtrace.parent(), new Bounds(pos)), "expected '\"'");
+            throw new TxedtError(backtrace.sameWith(new Bounds(pos)), "expected '\"'");
         }
         pos.step();
 
         StringBuilder sb = new StringBuilder();
         while (pos.getChar() != '"') {
             if (pos.getChar() == '\n') {
-                throw new TxedtError(new Backtrace(backtrace.parent(), new Bounds(pos)), "unexpected newline");
+                throw new TxedtError(backtrace.sameWith(new Bounds(pos)), "unexpected newline");
             }
             if (pos.getChar() == '\0') {
-                throw new TxedtError(new Backtrace(backtrace.parent(), new Bounds(pos)), "unexpected eof");
+                throw new TxedtError(backtrace.sameWith(new Bounds(pos)), "unexpected eof");
             }
             sb.append(pos.getChar());
             pos.step();
@@ -134,7 +134,7 @@ public final class Parser {
         try {
             str = sb.toString().translateEscapes(); // thank you java :)
         } catch (IllegalArgumentException e) {
-            throw new TxedtError(new Backtrace(backtrace.parent(), new Bounds(start, end)), e.toString());
+            throw new TxedtError(backtrace.sameWith(new Bounds(start, end)), e.toString());
         }
 
         return new Node.Str(new Bounds(start, end), str);

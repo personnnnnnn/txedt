@@ -21,6 +21,10 @@ symbol.
 ### `(defmac std:prog ( (body stmts) ))`
 ### `(defmac std:progn ( (body stmts) ))`
 ### `(defmac std:progp ( (body stmts) ))`
+###
+### `(defmac std:defn ( (symbol function-name) (function-args args) (body stmts) ))`
+### `(defmac std:fn ( (function-args args) (body stmts) ))`
+
 
 ## `io` package
 
