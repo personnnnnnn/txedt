@@ -1,243 +1,139 @@
 package org.txedt.parser;
 
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.txedt.parser.nodes.*;
+import org.txedt.errors.TxedtError;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Parser {
-    public final @NotNull String fileName;
-    public final @NotNull String fileText;
-    public final @NotNull Position pos;
+    private Parser() { }
 
-    public final static String intRegex = "^[-+]?[0-9]+$";
-    public final static String floatRegex = "^[-+]?([0-9]+\\.|\\.[0-9]+|[0-9]+\\.[0-9]+)$";
+    public static final String WHITESPACE = " \n\t";
+    public static final String COMMENT_ENDERS = "\0\n";
+    public static final String NON_SYMBOL_CHARS = WHITESPACE + "\0();\"";
+    public static final String INT_REGEX = "^[\\-+]?[0-9]+$";
+    public static final String FLOAT_REGEX = "^[\\-+]?([0-9]+\\.|\\.[0-9]+|[0-9]+\\.[0-9]+)$";
 
-    public final static String nonSymbolChars = " \n\r\t\f;()\0\"";
-
-    @Contract(pure = true)
-    public static boolean isInt(@NotNull String x) {
-        return x.matches(intRegex);
-    }
-
-    @Contract(pure = true)
-    public static boolean isFloat(@NotNull String x) {
-        return x.matches(floatRegex);
-    }
-
-    public static @NotNull String parseString(@NotNull String x, AtomicInteger errIdx, AtomicBoolean ok) {
-        StringBuilder s = new StringBuilder();
-        for (int i = 0; i < x.length(); i++) {
-            if (x.charAt(i) == '\\') {
-                i++;
-                if (i >= x.length()) {
-                    ok.set(false);
-                    errIdx.set(i);
-                    return "expected character, not end of string";
-                }
-
-                switch (x.charAt(i)) {
-                    case 'n': s.append('\n'); break;
-                    case 'r': s.append('\r'); break;
-                    case 't': s.append('\t'); break;
-                    case '\\': s.append('\\'); break;
-                    case '\'': s.append('\''); break;
-                    case '"': s.append('"'); break;
-                    case '0': s.append('\0'); break;
-                    case '1': s.append('\1'); break;
-                    case '2': s.append('\2'); break;
-                    case '3': s.append('\3'); break;
-                    case '4': s.append('\4'); break;
-                    case '5': s.append('\5'); break;
-                    case '6': s.append('\6'); break;
-                    case '7': s.append('\7'); break;
-                    case 'x': {
-                        i++;
-                        if (i >= x.length()) {
-                            ok.set(false);
-                            errIdx.set(i);
-                            return "expected character, not end of string";
-                        }
-                        char first = x.charAt(i);
-                        if (!"0123456789abcdefABCDEF".contains("" + first)) {
-                            ok.set(false);
-                            errIdx.set(i);
-                            return "expected hex digit";
-                        }
-                        i++;
-                        if (i >= x.length()) {
-                            ok.set(false);
-                            errIdx.set(i);
-                            return "expected character, not end of string";
-                        }
-                        char second = x.charAt(i);
-                        if (!"0123456789abcdefABCDEF".contains("" + second)) {
-                            ok.set(false);
-                            errIdx.set(i);
-                            return "expected hex digit";
-                        }
-                        String hex = (first + "").toLowerCase() + (second + "").toLowerCase();
-                        byte value = (byte) Integer.parseInt(hex, 16);
-                        s.append((char) value);
-                    } break;
-                    case 'b': s.append('\b'); break;
-                    case 'f': s.append('\f'); break;
-                }
-                continue;
-            }
-            if (Utils.newlineAt(x, i)) {
-                s.append('\n');
-                continue;
-            }
-            if (x.charAt(i) == '\r') {
-                continue;
-            }
-            s.append(x.charAt(i));
+    public static @NotNull List<Node> parse(@NotNull Backtrace backtrace, @NotNull String src, @NotNull String text) throws TxedtError {
+        var pos = new Position(src, text);
+        var nodes = new ArrayList<Node>();
+        while (pos.getChar() != '\0') {
+            var node = nextNode(pos, backtrace);
+            nodes.add(node);
+            skipWhitespace(pos);
         }
-        ok.set(true);
-        return s.toString();
+        return nodes;
     }
 
-    public Parser(final @NotNull String fileName, final @NotNull String fileText) {
-        this.fileName = fileName;
-        this.fileText = fileText;
-        pos = new Position(fileName, fileText);
-    }
-
-    public void skipWhitespace() {
-        for (;;) {
-            switch (pos.getChar()) {
-                case ' ': case '\t': case '\r': case '\n':
+    private static void skipWhitespace(@NotNull Position pos) {
+        while (pos.getChar() != '\0') {
+            if (WHITESPACE.contains(pos.getChar() + "")) {
+                pos.step();
+                continue;
+            }
+            if (pos.getChar() == ';') {
+                while (!COMMENT_ENDERS.contains(pos.getChar() + "")) {
                     pos.step();
-                    continue;
-                case ';':
-                    while (!Utils.newlineAt(fileText, pos.idx) && pos.getChar() != '\0') {
-                        pos.step();
-                    }
-                    continue;
-                default:
-                    return;
+                }
+                continue;
             }
+            break;
         }
     }
 
-    public @Nullable Node nextNode() throws ParseError {
-        skipWhitespace();
-        if (pos.getChar() == '\0' || pos.getChar() == ')') {
-            return null;
-        }
-        if (pos.getChar() == '\"') {
-            return string();
-        }
+    private static @NotNull Node nextNode(@NotNull Position pos, @NotNull Backtrace backtrace) throws TxedtError {
+        skipWhitespace(pos);
         if (pos.getChar() == '(') {
-            return list();
+            return list(pos, backtrace);
         }
-        return symbol();
+        if (pos.getChar() == '"') {
+            return string(pos, backtrace);
+        }
+        return symbol(pos, backtrace);
     }
 
-    public @NotNull Node symbol() throws ParseError {
-        Position start = new Position(pos);
+    private static @NotNull Node symbol(@NotNull Position pos, @NotNull Backtrace backtrace) throws TxedtError {
+        var start = pos.copy();
 
-        StringBuilder symbolSB = new StringBuilder();
-        while (!nonSymbolChars.contains(pos.getChar() + "")) {
-            symbolSB.append(pos.getChar());
+        StringBuilder sb = new StringBuilder();
+        while (!NON_SYMBOL_CHARS.contains(pos.getChar() + "")) {
+            sb.append(pos.getChar());
             pos.step();
         }
-        String symbol = symbolSB.toString();
 
-        Bounds bounds = new Bounds(start, new Position(pos));
+        var end = pos.copy();
 
-        if (isInt(symbol)) {
-            long n = Long.parseLong(symbol);
-            return new IntNode(bounds, n);
+        String symbol = sb.toString();
+        if (symbol.isEmpty()) {
+            throw new TxedtError(new Backtrace(backtrace.parent(), new Bounds(start)), "expected a symbol");
         }
 
-        if (isFloat(symbol)) {
-            double f = Double.parseDouble(symbol);
-            return new FloatNode(bounds, f);
+        var backTr = new Backtrace(backtrace, new Bounds(start, end));
+
+        if (symbol.matches(INT_REGEX)) {
+            var n = Long.parseLong(symbol);
+            return new Node.Int(backTr, n);
         }
 
-        return new SymbolNode(bounds, symbol);
+        if (symbol.matches(FLOAT_REGEX)) {
+            var n = Double.parseDouble(symbol);
+            return new Node.Flt(backTr, n);
+        }
+
+        return new Node.Symbol(backTr, symbol);
     }
 
-    public @NotNull StringNode string() throws ParseError {
-        char quote = pos.getChar();
-        Position start = new Position(pos);
-        pos.step();
-
-        StringBuilder stringSB = new StringBuilder();
-        while (pos.getChar() != quote) {
-            if (pos.getChar() == '\\') {
-                stringSB.append('\\');
-                pos.step();
-            }
-            if (pos.getChar() == '\r' || pos.getChar() == '\n' || pos.getChar() == '\0') {
-                Position a = new Position(pos);
-                pos.step();
-                Position b = new Position(pos);
-                Bounds bounds = new Bounds(a, b);
-                throw new ParseError(bounds, pos.getChar() == '\0' ? "unexpected eof" : "unexpected newline");
-            }
-            stringSB.append(pos.getChar());
-            pos.step();
-        }
-        String s = stringSB.toString();
-        pos.step();
-
-        AtomicBoolean ok = new AtomicBoolean(true);
-        AtomicInteger errIdx = new AtomicInteger(-1);
-        String res = parseString(s, errIdx, ok);
-        if (!ok.get()) {
-            Position p = new Position(pos);
-            p.idx += errIdx.get() + 1;
-            p.col += errIdx.get() + 1;
-            Position next = new Position(p);
-            next.step();
-            throw new ParseError(new Bounds(p, next), res);
+    private static @NotNull Node.Lst list(@NotNull Position pos, @NotNull Backtrace backtrace) throws TxedtError {
+        if (pos.getChar() != '(') {
+            throw new TxedtError(new Backtrace(backtrace.parent(), new Bounds(pos)), "expected '('");
         }
 
-        Bounds bounds = new Bounds(start, new Position(pos));
-        return new StringNode(bounds, res);
-    }
-
-    public @NotNull ListNode list() throws ParseError {
-        Position start = new Position(pos);
+        var start = pos.copy();
+        pos.step();
         List<Node> children = new ArrayList<>();
 
-        if (pos.getChar() != '(') {
-            Position end = new Position(pos);
-            end.step();
-            Bounds bounds = new Bounds(start, end);
-            throw new ParseError(bounds, "expected '('");
-        }
-        pos.step();
-
-        for (;;) {
-            Node child = nextNode();
-            if (child == null) {
-                break;
+        skipWhitespace(pos);
+        while (pos.getChar() != ')') {
+            if (pos.getChar() == '\0') {
+                throw new TxedtError(new Backtrace(backtrace.parent(), new Bounds(pos)), "expected ')'");
             }
-            children.add(child);
-        }
-
-        skipWhitespace();
-
-        if (pos.getChar() != ')') {
-            Position a = new Position(pos);
-            pos.step();
-            Position b = new Position(pos);
-            Bounds bounds = new Bounds(a, b);
-            throw new ParseError(bounds, "expected ')'");
+            var node = nextNode(pos, backtrace);
+            children.add(node);
+            skipWhitespace(pos);
         }
 
         pos.step();
-        Position end = new Position(pos);
-        Bounds bounds = new Bounds(start, end);
-        return new ListNode(bounds, children);
+        var end = pos.copy();
+
+        return new Node.Lst(new Backtrace(backtrace.parent(), new Bounds(start, end)), children);
     }
+
+    private static @NotNull Node.Str string(@NotNull Position pos, @NotNull Backtrace backtrace) throws TxedtError {
+        var start = pos.copy();
+
+        if (pos.getChar() != '"') {
+            throw new TxedtError(new Backtrace(backtrace.parent(), new Bounds(pos)), "expected '\"'");
+        }
+        pos.step();
+
+        StringBuilder sb = new StringBuilder();
+        while (pos.getChar() != '"') {
+            sb.append(pos.getChar());
+            pos.step();
+        }
+
+        pos.step();
+        var end = pos.copy();
+
+        String str;
+        try {
+            str = sb.toString().translateEscapes(); // thank you java :)
+        } catch (IllegalArgumentException e) {
+            throw new TxedtError(new Backtrace(backtrace.parent(), new Bounds(start, end)), e.toString());
+        }
+
+        return new Node.Str(new Backtrace(backtrace.parent(), new Bounds(start, end)), str);
+    }
+
 }

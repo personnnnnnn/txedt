@@ -1,14 +1,1 @@
-(mac x2 (n)
-    (ast (* 2 ,n)))
-
-(mac log (&body body)
-    (ast (prog
-        (print "Start")
-        (var x (prog ,@body))
-        (print "End")
-        x)))
-
-; HOW DOES IT WORK FIRST TRY WTF
-
-(print (x2 2))
-(log (print 5) (print 2))
+(print)

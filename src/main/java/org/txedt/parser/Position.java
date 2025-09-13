@@ -3,53 +3,48 @@ package org.txedt.parser;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-public class Position {
-    public final @NotNull String fileText;
-    public final @NotNull String fileName;
-    public int idx;
-    public int col;
-    public int ln;
+public final class Position {
+    public int col, ln, idx;
+    public @NotNull String src, text;
 
-    public Position(final @NotNull String fileName, final @NotNull String fileText) {
-        this.fileName = fileName;
-        this.fileText = fileText;
-        this.idx = 0;
-        this.col = 0;
-        this.ln = 0;
-    }
-
-    public Position(final @NotNull String fileName, final @NotNull String fileText, int idx, int col, int ln) {
-        this.fileName = fileName;
-        this.fileText = fileText;
-        this.idx = idx;
+    public Position(@NotNull String src, @NotNull String text, int col, int ln, int idx) {
+        this.src = src;
+        this.text = text;
         this.col = col;
         this.ln = ln;
+        this.idx = idx;
     }
 
-    @Contract(pure = true)
-    public Position(final @NotNull Position pos) {
-        this.fileName = pos.fileName;
-        this.fileText = pos.fileText;
-        this.idx = pos.idx;
-        this.col = pos.col;
-        this.ln = pos.ln;
+    public Position(@NotNull String src, @NotNull String text) {
+        this(src, text, 0, 0, 0);
     }
 
-    public void step() {
-        col++;
-        if (idx < fileText.length()) idx++;
-        if (fileText.charAt(idx - 1) == '\n') {
-            ln++;
-            col = 0;
-        }
+    public Position(@NotNull Position position) {
+        this(position.src, position.text, position.col, position.ln, position.idx);
+    }
+
+    @Contract(" -> new")
+    public @NotNull Position copy() {
+        return new Position(this);
     }
 
     public char getChar() {
-        return idx >= fileText.length() ? '\0' : fileText.charAt(idx);
+        return idx >= text.length() ? '\0' : text.charAt(idx);
     }
 
-    @Override
-    public String toString() {
-        return "file '" + this.fileName + "', idx " + idx + ", line " + ln + ", col " + col;
+    public Position step() {
+        switch (getChar()) {
+            case '\0' -> { }
+            case '\n' -> {
+                idx++;
+                ln++;
+                col = 0;
+            }
+            default -> {
+                idx++;
+                col++;
+            }
+        }
+        return this;
     }
 }
