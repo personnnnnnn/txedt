@@ -6,7 +6,7 @@ import org.txedt.errors.TxedtError;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Parser {
+public final class Parser {
     private Parser() { }
 
     public static final String WHITESPACE = " \n\t";
@@ -69,19 +69,17 @@ public class Parser {
             throw new TxedtError(new Backtrace(backtrace.parent(), new Bounds(start)), "expected a symbol");
         }
 
-        var backTr = new Backtrace(backtrace, new Bounds(start, end));
-
         if (symbol.matches(INT_REGEX)) {
             var n = Long.parseLong(symbol);
-            return new Node.Int(backTr, n);
+            return new Node.Int(new Bounds(start, end), n);
         }
 
         if (symbol.matches(FLOAT_REGEX)) {
             var n = Double.parseDouble(symbol);
-            return new Node.Flt(backTr, n);
+            return new Node.Flt(new Bounds(start, end), n);
         }
 
-        return new Node.Symbol(backTr, symbol);
+        return new Node.Symbol(new Bounds(start, end), symbol);
     }
 
     private static @NotNull Node.Lst list(@NotNull Position pos, @NotNull Backtrace backtrace) throws TxedtError {
@@ -106,7 +104,7 @@ public class Parser {
         pos.step();
         var end = pos.copy();
 
-        return new Node.Lst(new Backtrace(backtrace.parent(), new Bounds(start, end)), children);
+        return new Node.Lst(new Bounds(start, end), children);
     }
 
     private static @NotNull Node.Str string(@NotNull Position pos, @NotNull Backtrace backtrace) throws TxedtError {
@@ -133,7 +131,7 @@ public class Parser {
             throw new TxedtError(new Backtrace(backtrace.parent(), new Bounds(start, end)), e.toString());
         }
 
-        return new Node.Str(new Backtrace(backtrace.parent(), new Bounds(start, end)), str);
+        return new Node.Str(new Bounds(start, end), str);
     }
 
 }

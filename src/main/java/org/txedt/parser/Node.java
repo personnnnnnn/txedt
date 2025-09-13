@@ -5,17 +5,17 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public abstract sealed class Node {
-    public final @NotNull Backtrace backtrace;
+    public final @NotNull Bounds bounds;
 
-    protected Node(@NotNull Backtrace backtrace) {
-        this.backtrace = backtrace;
+    protected Node(@NotNull Bounds bounds) {
+        this.bounds = bounds;
     }
 
     public static final class Int extends Node {
         public final long n;
 
-        public Int(@NotNull Backtrace backtrace, long n) {
-            super(backtrace);
+        public Int(@NotNull Bounds bounds, long n) {
+            super(bounds);
             this.n = n;
         }
 
@@ -28,8 +28,8 @@ public abstract sealed class Node {
     public static final class Flt extends Node {
         public final double n;
 
-        public Flt(@NotNull Backtrace backtrace, double n) {
-            super(backtrace);
+        public Flt(@NotNull Bounds bounds, double n) {
+            super(bounds);
             this.n = n;
         }
 
@@ -42,8 +42,8 @@ public abstract sealed class Node {
     public static final class Str extends Node {
         public final @NotNull String s;
 
-        public Str(@NotNull Backtrace backtrace, @NotNull String s) {
-            super(backtrace);
+        public Str(@NotNull Bounds bounds, @NotNull String s) {
+            super(bounds);
             this.s = s;
         }
 
@@ -56,8 +56,8 @@ public abstract sealed class Node {
     public static final class Symbol extends Node {
         public final @NotNull String s;
 
-        public Symbol(@NotNull Backtrace backtrace, @NotNull String s) {
-            super(backtrace);
+        public Symbol(@NotNull Bounds bounds, @NotNull String s) {
+            super(bounds);
             this.s = s;
         }
 
@@ -70,8 +70,8 @@ public abstract sealed class Node {
     public static final class Lst extends Node {
         public final @NotNull List<Node> children;
 
-        public Lst(@NotNull Backtrace backtrace, @NotNull List<Node> children) {
-            super(backtrace);
+        public Lst(@NotNull Bounds bounds, @NotNull List<Node> children) {
+            super(bounds);
             this.children = children;
         }
 

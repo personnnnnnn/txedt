@@ -1,12 +1,18 @@
 package org.txedt;
 
-import org.txedt.errors.TxedtError;
+import org.txedt.contexts.Context;
+import org.txedt.errors.TxedtThrowable;
+import org.txedt.interpreter.CallData;
+import org.txedt.interpreter.Interpreter;
+import org.txedt.libs.IO;
+import org.txedt.libs.Std;
 import org.txedt.parser.Backtrace;
 import org.txedt.parser.Node;
 import org.txedt.parser.Parser;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -35,15 +41,20 @@ public class Main {
             return;
         }
 
-        System.out.println(text);
-        Node.Lst nodes;
+        var globals = new Context()
+                .parent(IO.ctx)
+                .parent(Std.ctx);
+
+        List<Node> nodes;
         try {
             var backtrace = new Backtrace();
-            nodes = new Node.Lst(backtrace, Parser.parse(backtrace, file, text));
-        } catch (TxedtError e) {
+            nodes = Parser.parse(backtrace, file, text);
+            var data = new CallData(backtrace, globals);
+            for (var stmt : nodes) {
+                Interpreter.eval(stmt, data);
+            }
+        } catch (TxedtThrowable e) {
             System.out.println(e.getOutString());
-            return;
         }
-        System.out.println("Ok: " + nodes);
     }
 }
