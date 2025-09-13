@@ -26,12 +26,12 @@ public class Main {
 
         try {
             var sb = new StringBuilder();
-            var join = "";
             File f = new File(file);
             Scanner scanner = new Scanner(f);
+            var join = "";
             while (scanner.hasNextLine()) {
-                String data = scanner.nextLine();
-                sb.append(data).append(join);
+                String data = scanner.nextLine().replace("\r", "");
+                sb.append(join).append(data);
                 join = "\n";
             }
             scanner.close();

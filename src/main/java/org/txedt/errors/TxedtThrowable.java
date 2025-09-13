@@ -43,10 +43,7 @@ public class TxedtThrowable extends Exception {
         while (start > 0 && s.charAt(start - 1) != '\n') {
             start--;
         }
-        if (end < s.length() && s.charAt(end) == '\n') {
-            end--;
-        }
-        while (end < s.length() - 1 && s.charAt(end + 1) != '\n' && s.charAt(end) != '\n') {
+        while (end < s.length() && s.charAt(end) != '\n') {
             end++;
         }
         return s.substring(start, end);

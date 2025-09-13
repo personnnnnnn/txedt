@@ -6,7 +6,9 @@ import org.txedt.contexts.ContextPrivilege;
 import org.txedt.errors.TxedtError;
 import org.txedt.errors.TxedtThrowable;
 import org.txedt.functions.FunctionValue;
+import org.txedt.macros.MacroValue;
 import org.txedt.parser.Backtrace;
+import org.txedt.parser.Bounds;
 import org.txedt.parser.Node;
 
 import java.util.ArrayList;
@@ -25,7 +27,7 @@ public final class Interpreter {
         };
     }
 
-    public static @Nullable Object eval(@NotNull Node.Lst node, CallData callData) throws TxedtThrowable {
+    private static @Nullable Object eval(@NotNull Node.Lst node, CallData callData) throws TxedtThrowable {
         if (node.children.isEmpty()) {
             return null;
         }
@@ -38,7 +40,13 @@ public final class Interpreter {
                 for (var x : args) {
                     argv.add(eval(x, callData));
                 }
-                yield f.call(callData.backtrace(), argv);
+                yield f.call(new Backtrace(callData.backtrace(), node.bounds), argv);
+            }
+            case MacroValue m -> {
+                var subList = args.isEmpty()
+                        ? new Node.Lst(new Bounds(node.bounds.end().copy().stepBack(), node.bounds.end().copy()), args)
+                        : new Node.Lst(new Bounds(args.getFirst().bounds.start().copy(), args.getLast().bounds.end().copy()), args);
+                yield m.call(new CallData(new Backtrace(callData.backtrace(), node.bounds), callData.context()), subList);
             }
             case null, default -> throw new TxedtError(callData.backtrace(), "uncallable value");
         };

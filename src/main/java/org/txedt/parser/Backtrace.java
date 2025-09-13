@@ -21,11 +21,10 @@ public record Backtrace(@Nullable Backtrace parent, @Nullable String description
     }
 
     public @NotNull String toString(String prefix) {
-        String s = "";
+        String s = brief(prefix);
         if (parent != null) {
-            s += parent.toString(prefix) + "\n";
+            s += "\n" + parent.toString(prefix);
         }
-        s += brief(prefix);
         return s;
     }
 

@@ -23,6 +23,14 @@ public abstract sealed class Node {
         public String toString() {
             return n + "";
         }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (!(obj instanceof Int i)) {
+                return false;
+            }
+            return i.n == n;
+        }
     }
 
     public static final class Flt extends Node {
@@ -36,6 +44,14 @@ public abstract sealed class Node {
         @Override
         public String toString() {
             return n + "";
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (!(obj instanceof Flt f)) {
+                return false;
+            }
+            return f.n == n;
         }
     }
 
@@ -51,6 +67,14 @@ public abstract sealed class Node {
         public String toString() {
             return "\"" + s + "\"";
         }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (!(obj instanceof Str str)) {
+                return false;
+            }
+            return str.s.equals(s);
+        }
     }
 
     public static final class Symbol extends Node {
@@ -64,6 +88,14 @@ public abstract sealed class Node {
         @Override
         public String toString() {
             return s;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (!(obj instanceof Symbol symb)) {
+                return false;
+            }
+            return symb.s.equals(s);
         }
     }
 
@@ -84,6 +116,14 @@ public abstract sealed class Node {
                 join = " ";
             }
             return s + ")";
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (!(obj instanceof Lst l)) {
+                return false;
+            }
+            return l.children.equals(children);
         }
     }
 }

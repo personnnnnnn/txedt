@@ -113,7 +113,7 @@ public class Context {
 
     public Object get(Backtrace backtrace, ContextPrivilege privilege, @NotNull String name) throws TxedtThrowable {
         switch (getOk(privilege, name)) {
-            case ContextResult.NotFound ignore -> throw new TxedtError(backtrace, "variable " + name + " does not exist");
+            case ContextResult.NotFound ignore -> throw new TxedtError(backtrace, "variable '" + name + "' does not exist");
             case ContextResult.Value v -> {
                 return v.v();
             }
@@ -122,7 +122,7 @@ public class Context {
 
     public void set(Backtrace backtrace, ContextPrivilege privilege, @NotNull String name, Object value) throws TxedtThrowable {
         if (!setOk(privilege, name, value)) {
-            throw new TxedtError(backtrace, "variable " + name + "does not exist");
+            throw new TxedtError(backtrace, "variable '" + name + "' does not exist");
         }
     }
 }

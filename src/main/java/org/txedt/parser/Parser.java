@@ -62,7 +62,7 @@ public final class Parser {
             pos.step();
         }
 
-        var end = pos.copy();
+        var end = pos.copy().stepBack();
 
         String symbol = sb.toString();
         if (symbol.isEmpty()) {
@@ -101,8 +101,8 @@ public final class Parser {
             skipWhitespace(pos);
         }
 
-        pos.step();
         var end = pos.copy();
+        pos.step();
 
         return new Node.Lst(new Bounds(start, end), children);
     }
@@ -117,12 +117,18 @@ public final class Parser {
 
         StringBuilder sb = new StringBuilder();
         while (pos.getChar() != '"') {
+            if (pos.getChar() == '\n') {
+                throw new TxedtError(new Backtrace(backtrace.parent(), new Bounds(pos)), "unexpected newline");
+            }
+            if (pos.getChar() == '\0') {
+                throw new TxedtError(new Backtrace(backtrace.parent(), new Bounds(pos)), "unexpected eof");
+            }
             sb.append(pos.getChar());
             pos.step();
         }
 
-        pos.step();
         var end = pos.copy();
+        pos.step();
 
         String str;
         try {

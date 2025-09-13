@@ -1,2 +1,4 @@
-(print (cat (input) "\n" (input)))
-(print (+ 1 2))
+(var x 0)
+(print x)
+(set x 5)
+(print x)

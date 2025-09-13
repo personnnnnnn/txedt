@@ -1,0 +1,32 @@
+; defmac example
+; it makes sense if you don't think about it too hard
+(defmac defn
+    ; if you were to do this in java, you would have
+    ; to put the same amount of effort into converting
+    ; the types as you would just parsing the input,
+    ; so this is exclusive to user macros
+    (
+        (symbol name) ; matches a symbol and puts it into 'name'
+        (sublist ; matches a sublist with the following contents:
+            (many args ; matches zero or more of the following contents and puts then into 'args':
+                (choose ; matches any one of these options and stores 't' into the corresponding variable, otherwise stores 'nil' into it and moves on
+                    (opt
+                        (token &optional) ; matches only the given symbol and nothing else
+                    )
+                    (rest (token &rest))
+                    (normal) ; this matches nothing, so it acts as an else. in normal circumstances, the 'choose' would not match
+                )
+                (symbol name)
+            )
+        )
+        (optional ; if the given contents don't match, then don't store the contents and move on
+            (string doc-string) ; matches a string
+        )
+        (many body
+            (expr stmt) ; matches an 'expression' (any one node, practically acts as 'any') and stores the node into 'stmt'
+        )
+        ; here, the 'finale' (the last statement being treated as a return value) is not implemented
+        ; directly in the signature, and instead has to be done through code. this is because the
+        ; 'many' would consume the finale, even if it wasn't optional, then and nothing would match.
+    )
+)

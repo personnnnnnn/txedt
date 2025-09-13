@@ -2,6 +2,7 @@ package org.txedt.parser;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.txedt.errors.TxedtThrowable;
 
 public final class Position {
     public int col, ln, idx;
@@ -44,6 +45,24 @@ public final class Position {
                 idx++;
                 col++;
             }
+        }
+        return this;
+    }
+
+    public Position stepBack() {
+        if (idx <= 0) {
+            return this;
+        }
+        idx--;
+        if (getChar() == '\n') {
+            ln--;
+            if (idx == 0) {
+                col = 0;
+            } else {
+                col = TxedtThrowable.lineAt(text, idx - 1).length();
+            }
+        } else {
+            col--;
         }
         return this;
     }
