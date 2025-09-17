@@ -1,2 +1,22 @@
-(var f (fn (x) (* 2 x)))
-(print (f 3))
+(defn list (&rest args) args)
+
+(defn list-push (lst value)
+    (set (list-len lst value) (+ 1 (list-len lst)))
+    value
+)
+
+(defn list-pop (lst)
+    (var len (- (list-len lst) 1))
+    (var x (list-idx lst len))
+    (set (list-len lst) len)
+    x
+)
+
+(defn list-rm-unordered (lst idx)
+    (var orig (list-idx lst idx))
+    (var len (- (list-len lst) 1)))
+    (set (list-idx lst idx) (list-idx lst len)
+    (set (list-len lst) len)
+    orig
+)
+

@@ -31,9 +31,9 @@ public final class FunctionSignature {
         return this;
     }
 
-    public FunctionSignature restFail(@Nullable Backtrace backtrace, @NotNull String name) throws TxedtError {
+    public FunctionSignature restFail(@Nullable Backtrace debug, @NotNull String name) throws TxedtError {
         if (restIdx != -1) {
-            throw new TxedtError(backtrace, "cannot have more than one arguments with &rest!");
+            throw new TxedtError(debug, "cannot have more than one arguments with &rest!");
         }
         restIdx = sigArgs.size();
         sigArgs.add(new FunctionArgument(name, FunctionArgumentType.REST));
@@ -49,11 +49,11 @@ public final class FunctionSignature {
     }
 
     @Contract(value = "_, _, _ -> this", pure = true)
-    public FunctionSignature dynamic(@Nullable Backtrace backtrace, @NotNull FunctionArgumentType type, @NotNull String name) throws TxedtError {
+    public FunctionSignature dynamic(@Nullable Backtrace debug, @NotNull FunctionArgumentType type, @NotNull String name) throws TxedtError {
         switch (type) {
             case NORMAL -> arg(name);
             case OPTIONAL -> opt(name);
-            case REST -> restFail(backtrace, name);
+            case REST -> restFail(debug, name);
         }
         return this;
     }
@@ -64,17 +64,43 @@ public final class FunctionSignature {
 
     private final Set<String> ignore = new HashSet<>();
 
-    public @NotNull Map<String, Object> mapArgs(@NotNull List<Object> argv) throws TxedtThrowable {
+    public @NotNull String repr() {
+        return
+                (minArgc == maxArgc
+                        ? minArgc + ""
+                        : minArgc + "-" + maxArgc
+                ) + (restIdx != -1
+                        ? "+"
+                        : ""
+                );
+    }
+
+    public boolean isSingular() {
+        return minArgc == maxArgc && minArgc == 1 && restIdx == -1;
+    }
+
+    public @NotNull Map<String, Object> mapArgs(@NotNull List<Object> argv, @Nullable Backtrace debug) throws TxedtThrowable {
         int argc = argv.size();
         if (!argcMatches(argc)) {
-            throw new TxedtError(null, "invalid argument count");
+            throw new TxedtError(
+                    debug,
+                    "invalid argument count -- expected "
+                            + repr() + " argument"
+                            + (isSingular() ? "" : "s")
+                            + ", not " + argc
+            );
         }
 
         if (restIdx == -1 || argc <= maxArgc) {
             final var ret = new HashMap<String, Object>();
 
             ignore.clear();
-            var rmCount = maxArgc - minArgc;
+            if (restIdx != -1) {
+                ret.put(sigArgs.get(restIdx).name(), new ArrayList<>());
+                ignore.add(sigArgs.get(restIdx).name());
+            }
+
+            var rmCount = maxArgc - argc;
             for (final var arg : sigArgs.reversed()) {
                 if (rmCount <= 0) {
                     break;
@@ -82,17 +108,12 @@ public final class FunctionSignature {
                 if (arg.type() == FunctionArgumentType.OPTIONAL) {
                     rmCount--;
                     ignore.add(arg.name());
-                    continue;
-                }
-                if (arg.type() == FunctionArgumentType.REST) {
-                    ignore.add(arg.name());
-                    ret.put(arg.name(), List.of());
                 }
             }
 
             var argvI = 0;
             for (final var arg : sigArgs) {
-                if (ignore.contains(arg.name())) {
+                if (ignore.contains(arg.name()) || argvI >= argc) {
                     continue;
                 }
                 ret.put(arg.name(), argv.get(argvI));
