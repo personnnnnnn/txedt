@@ -1,22 +1,96 @@
-(defn list (&rest args) args)
+(var std:nil ())
+(var std:t (not nil))
 
-(defn list-push (lst value)
-    (set (list-len lst value) (+ 1 (list-len lst)))
-    value
+(print "random password generator")
+
+(var random (progp
+    (defn xoshiro128ss (a b c d)
+        (fn ()
+            (var t (<< b 9))
+            (var r (* b 5))
+            (set r (* (| (<< r 7) (>> r 25)) 8))
+            (set c (^ c a))
+            (set d (^ d b))
+            (set b (^ b c))
+            (set a (^ a d))
+            (set c (^ c t))
+            (set d (| (<< d 11) (>> d 21)))
+            r
+        )
+    )
+
+    (this-ctx)
+))
+
+(defn parse-int (s)
+    (var n 0)
+    (var i 0)
+    (loop
+        (unless (< i (str-len s)) (return n))
+        (var chr (str-idx s i))
+        (set n (+ (* 10 n) (cond
+            ((= chr "1") 1)
+            ((= chr "2") 2)
+            ((= chr "3") 3)
+            ((= chr "4") 4)
+            ((= chr "5") 5)
+            ((= chr "6") 6)
+            ((= chr "7") 7)
+            ((= chr "8") 8)
+            ((= chr "9") 9)
+            (t 0)
+        )))
+        (set i (1+ i))
+    )
 )
 
-(defn list-pop (lst)
-    (var len (- (list-len lst) 1))
-    (var x (list-idx lst len))
-    (set (list-len lst) len)
+(print "enter number of characters:")
+(var char-num (parse-int (input)))
+(print "symbols to include (leave blank for default):")
+(var char-opt (input))
+(set char-opt (if (= char-opt "") (progn
+    (var x "abcdefghijklmnopqrstuvwxyzACDEFGHIJKLMNOPQRSTUVWXYZ1234567890(){}[]:;,.<>/?\\|+=-_!@#$%^&*~")
+    (print x)
     x
+) char-opt))
+(print "choose seed:")
+(var seed (input))
+
+(var a 0)
+(var b 0)
+(var c 0)
+(var d 0)
+
+(progn
+    (var i 0)
+    (loop
+        (unless (< i (str-len seed)) (return))
+        (var mod (% i 4))
+        (var code (str-code seed i))
+        (cond
+            ((= mod 0) (set a (* (- a code 2729) (1+ d))))
+            ((= mod 1) (set b (* (+ b code) (+ 1 i a))))
+            ((= mod 2) (set c (* (- c code 134) (+ 204 i d (* -29 b)))))
+            ((= mod 3) (set d (* (+ d code 364) (- 40 code c))))
+        )
+        (set i (1+ i))
+    )
 )
 
-(defn list-rm-unordered (lst idx)
-    (var orig (list-idx lst idx))
-    (var len (- (list-len lst) 1)))
-    (set (list-idx lst idx) (list-idx lst len)
-    (set (list-len lst) len)
-    orig
+(var gen (random:xoshiro128ss a b c d))
+
+(defn choose-random (s)
+    (str-idx s (% (gen) (str-len s)))
 )
 
+(print "password:")
+(var password "")
+(progn
+    (var i 0)
+    (loop
+        (unless (< i char-num) (return))
+        (set password (cat password (choose-random char-opt)))
+        (set i (1+ i))
+    )
+)
+(print password)
