@@ -1,9 +1,9 @@
-package org.txedt.properties;
+package org.txedt.lang.properties;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.txedt.functions.FunctionValue;
-import org.txedt.interpreter.NamedCallable;
+import org.txedt.lang.functions.FunctionValue;
+import org.txedt.lang.interpreter.NamedCallable;
 
 public record PropertyValue(@Nullable String name, @NotNull FunctionValue get,
                             @NotNull FunctionValue set) implements NamedCallable {

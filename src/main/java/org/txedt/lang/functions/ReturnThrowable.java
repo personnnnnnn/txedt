@@ -1,8 +1,8 @@
-package org.txedt.functions;
+package org.txedt.lang.functions;
 
 import org.jetbrains.annotations.Nullable;
-import org.txedt.errors.TxedtThrowable;
-import org.txedt.parser.Backtrace;
+import org.txedt.lang.errors.TxedtThrowable;
+import org.txedt.lang.parser.Backtrace;
 
 public class ReturnThrowable extends TxedtThrowable {
     public final Object returnValue;

@@ -1,24 +1,24 @@
-package org.txedt.libs;
+package org.txedt.lang.libs;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.txedt.contexts.Context;
-import org.txedt.contexts.ContextPrivilege;
-import org.txedt.errors.TxedtError;
-import org.txedt.errors.TxedtThrowable;
-import org.txedt.functions.*;
-import org.txedt.functions.signature.FunctionArgumentType;
-import org.txedt.functions.signature.FunctionSignature;
-import org.txedt.general.Equality;
-import org.txedt.general.TxedtBool;
-import org.txedt.general.TxedtStr;
-import org.txedt.interpreter.CallData;
-import org.txedt.interpreter.Interpreter;
-import org.txedt.macros.ExternalMacro;
-import org.txedt.parser.Backtrace;
-import org.txedt.parser.Node;
-import org.txedt.properties.PropertyValue;
+import org.txedt.lang.contexts.Context;
+import org.txedt.lang.contexts.ContextPrivilege;
+import org.txedt.lang.errors.TxedtError;
+import org.txedt.lang.errors.TxedtThrowable;
+import org.txedt.lang.functions.*;
+import org.txedt.lang.functions.signature.FunctionArgumentType;
+import org.txedt.lang.functions.signature.FunctionSignature;
+import org.txedt.lang.general.Equality;
+import org.txedt.lang.general.TxedtBool;
+import org.txedt.lang.general.TxedtStr;
+import org.txedt.lang.interpreter.CallData;
+import org.txedt.lang.interpreter.Interpreter;
+import org.txedt.lang.macros.ExternalMacro;
+import org.txedt.lang.parser.Backtrace;
+import org.txedt.lang.parser.Node;
+import org.txedt.lang.properties.PropertyValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -1208,6 +1208,72 @@ public final class Std {
                     case Integer i -> Math.abs(i);
                     case Double d -> Math.abs(d);
                     case null, default -> throw new TxedtError(backt, "can only abs numbers");
+                }
+        ));
+
+        ctx.put("let", new ExternalMacro(
+                "let",
+                (callData, args) -> {
+                    if (args.children.isEmpty()) {
+                        throw new TxedtError(callData.backtrace(), "expected variable definition list and body");
+                    }
+                    if (!(args.children.getFirst() instanceof Node.Lst varDefs)) {
+                        throw new TxedtError(Backtrace.sameWith(callData.backtrace(), args.children.getFirst().bounds), "expected variable definition list");
+                    }
+                    var ctx = new Context().parent(callData.context());
+                    for (var def : varDefs.children) {
+                        if (def instanceof Node.Symbol symbol) {
+                            ctx.put(symbol.s, null);
+                            continue;
+                        }
+                        if (def instanceof Node.Lst list) {
+                            if (list.children.size() != 2) {
+                                throw new TxedtError(Backtrace.sameWith(callData.backtrace(), def.bounds), "expected variable name and value");
+                            }
+                            if (!(list.children.getFirst() instanceof Node.Symbol symbol)) {
+                                throw new TxedtError(Backtrace.sameWith(callData.backtrace(), list.children.getFirst().bounds), "expected variable name");
+                            }
+                            var expr = Interpreter.evalWith(list.children.getLast(), callData);
+                            ctx.put(symbol.s, expr);
+                            continue;
+                        }
+                        throw new TxedtError(Backtrace.sameWith(callData.backtrace(), def.bounds), "expected variable definition");
+                    }
+                    var rest = args.sublist(1);
+                    return Interpreter.exec(rest.children, new CallData(Backtrace.sameWithParent(callData.backtrace(), rest.bounds), ctx));
+                }
+        ));
+
+        ctx.put("let*", new ExternalMacro(
+                "let*",
+                (callData, args) -> {
+                    if (args.children.isEmpty()) {
+                        throw new TxedtError(callData.backtrace(), "expected variable definition list and body");
+                    }
+                    if (!(args.children.getFirst() instanceof Node.Lst varDefs)) {
+                        throw new TxedtError(Backtrace.sameWith(callData.backtrace(), args.children.getFirst().bounds), "expected variable definition list");
+                    }
+                    var ctx = new Context().parent(callData.context());
+                    for (var def : varDefs.children) {
+                        if (def instanceof Node.Symbol symbol) {
+                            ctx.put(symbol.s, null);
+                            continue;
+                        }
+                        if (def instanceof Node.Lst list) {
+                            if (list.children.size() != 2) {
+                                throw new TxedtError(Backtrace.sameWith(callData.backtrace(), def.bounds), "expected variable name and value");
+                            }
+                            if (!(list.children.getFirst() instanceof Node.Symbol symbol)) {
+                                throw new TxedtError(Backtrace.sameWith(callData.backtrace(), list.children.getFirst().bounds), "expected variable name");
+                            }
+                            var expr = Interpreter.evalWith(list.children.getLast(), new CallData(null, ctx));
+                            ctx.put(symbol.s, expr);
+                            continue;
+                        }
+                        throw new TxedtError(Backtrace.sameWith(callData.backtrace(), def.bounds), "expected variable definition");
+                    }
+                    var rest = args.sublist(1);
+                    return Interpreter.exec(rest.children, new CallData(Backtrace.sameWithParent(callData.backtrace(), rest.bounds), ctx));
                 }
         ));
     }

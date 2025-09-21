@@ -1,8 +1,8 @@
-package org.txedt.interpreter;
+package org.txedt.lang.interpreter;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.txedt.contexts.Context;
-import org.txedt.parser.Backtrace;
+import org.txedt.lang.contexts.Context;
+import org.txedt.lang.parser.Backtrace;
 
 public record CallData(@Nullable Backtrace backtrace, @NotNull Context context) { }

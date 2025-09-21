@@ -1,7 +1,7 @@
-package org.txedt.parser;
+package org.txedt.lang.parser;
 
 import org.jetbrains.annotations.NotNull;
-import org.txedt.errors.TxedtError;
+import org.txedt.lang.errors.TxedtError;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,10 +1,10 @@
-package org.txedt.contexts;
+package org.txedt.lang.contexts;
 
 import org.jetbrains.annotations.NotNull;
-import org.txedt.errors.TxedtError;
-import org.txedt.errors.TxedtThrowable;
-import org.txedt.parser.Backtrace;
-import org.txedt.parser.Bounds;
+import org.txedt.lang.errors.TxedtError;
+import org.txedt.lang.errors.TxedtThrowable;
+import org.txedt.lang.parser.Backtrace;
+import org.txedt.lang.parser.Bounds;
 
 import java.util.ArrayList;
 import java.util.HashMap;

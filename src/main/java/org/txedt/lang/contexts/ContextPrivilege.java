@@ -1,4 +1,4 @@
-package org.txedt.contexts;
+package org.txedt.lang.contexts;
 
 public enum ContextPrivilege {
     PUBLIC, // context:var-name

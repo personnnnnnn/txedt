@@ -1,14 +1,14 @@
-package org.txedt.functions;
+package org.txedt.lang.functions;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.txedt.contexts.Context;
-import org.txedt.errors.TxedtThrowable;
-import org.txedt.functions.signature.FunctionSignature;
-import org.txedt.interpreter.CallData;
-import org.txedt.interpreter.Interpreter;
-import org.txedt.parser.Backtrace;
-import org.txedt.parser.Node;
+import org.txedt.lang.contexts.Context;
+import org.txedt.lang.errors.TxedtThrowable;
+import org.txedt.lang.functions.signature.FunctionSignature;
+import org.txedt.lang.interpreter.CallData;
+import org.txedt.lang.interpreter.Interpreter;
+import org.txedt.lang.parser.Backtrace;
+import org.txedt.lang.parser.Node;
 
 import java.util.List;
 import java.util.Map;

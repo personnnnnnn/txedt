@@ -1,8 +1,8 @@
-package org.txedt.parser;
+package org.txedt.lang.parser;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.txedt.errors.TxedtThrowable;
+import org.txedt.lang.errors.TxedtThrowable;
 
 public final class Position {
     public int col, ln, idx;

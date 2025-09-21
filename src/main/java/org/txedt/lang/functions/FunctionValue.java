@@ -1,11 +1,11 @@
-package org.txedt.functions;
+package org.txedt.lang.functions;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.txedt.errors.TxedtThrowable;
-import org.txedt.functions.signature.FunctionSignature;
-import org.txedt.interpreter.NamedCallable;
-import org.txedt.parser.Backtrace;
+import org.txedt.lang.errors.TxedtThrowable;
+import org.txedt.lang.functions.signature.FunctionSignature;
+import org.txedt.lang.interpreter.NamedCallable;
+import org.txedt.lang.parser.Backtrace;
 
 import java.util.List;
 import java.util.Map;

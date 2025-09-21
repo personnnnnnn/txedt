@@ -1,11 +1,11 @@
-package org.txedt.functions.signature;
+package org.txedt.lang.functions.signature;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.txedt.errors.TxedtError;
-import org.txedt.errors.TxedtThrowable;
-import org.txedt.parser.Backtrace;
+import org.txedt.lang.errors.TxedtError;
+import org.txedt.lang.errors.TxedtThrowable;
+import org.txedt.lang.parser.Backtrace;
 
 import java.util.*;
 

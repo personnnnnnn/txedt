@@ -1,4 +1,4 @@
-package org.txedt.interpreter;
+package org.txedt.lang.interpreter;
 
 import org.jetbrains.annotations.NotNull;
 

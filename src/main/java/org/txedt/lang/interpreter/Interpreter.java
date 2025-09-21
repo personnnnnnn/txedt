@@ -1,17 +1,17 @@
-package org.txedt.interpreter;
+package org.txedt.lang.interpreter;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.txedt.contexts.ContextPrivilege;
-import org.txedt.errors.TxedtError;
-import org.txedt.errors.TxedtThrowable;
-import org.txedt.functions.FunctionValue;
-import org.txedt.functions.ReturnThrowable;
-import org.txedt.macros.MacroValue;
-import org.txedt.parser.Backtrace;
-import org.txedt.parser.Bounds;
-import org.txedt.parser.Node;
-import org.txedt.properties.PropertyValue;
+import org.txedt.lang.contexts.ContextPrivilege;
+import org.txedt.lang.errors.TxedtError;
+import org.txedt.lang.errors.TxedtThrowable;
+import org.txedt.lang.functions.FunctionValue;
+import org.txedt.lang.functions.ReturnThrowable;
+import org.txedt.lang.macros.MacroValue;
+import org.txedt.lang.parser.Backtrace;
+import org.txedt.lang.parser.Bounds;
+import org.txedt.lang.parser.Node;
+import org.txedt.lang.properties.PropertyValue;
 
 import java.util.ArrayList;
 import java.util.List;

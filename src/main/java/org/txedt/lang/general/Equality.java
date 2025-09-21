@@ -1,4 +1,4 @@
-package org.txedt.general;
+package org.txedt.lang.general;
 
 public final class Equality {
     private Equality() { }

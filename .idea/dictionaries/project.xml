@@ -3,15 +3,22 @@
     <words>
       <w>abcdef</w>
       <w>backt</w>
+      <w>blockn</w>
+      <w>blockp</w>
       <w>defn</w>
+      <w>defs</w>
       <w>dsedit</w>
+      <w>framerate</w>
       <w>isnt</w>
+      <w>loopb</w>
+      <w>lsize</w>
       <w>progn</w>
       <w>progp</w>
       <w>repr</w>
       <w>sexprs</w>
       <w>symb</w>
       <w>txel</w>
+      <w>xxyy</w>
     </words>
   </dictionary>
 </component>

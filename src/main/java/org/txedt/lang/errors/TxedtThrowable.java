@@ -1,9 +1,9 @@
-package org.txedt.errors;
+package org.txedt.lang.errors;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.txedt.parser.Backtrace;
-import org.txedt.parser.Bounds;
+import org.txedt.lang.parser.Backtrace;
+import org.txedt.lang.parser.Bounds;
 
 public class TxedtThrowable extends Exception {
     public @NotNull String message;

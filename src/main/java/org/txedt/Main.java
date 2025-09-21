@@ -1,14 +1,15 @@
 package org.txedt;
 
-import org.txedt.contexts.Context;
-import org.txedt.errors.TxedtThrowable;
-import org.txedt.interpreter.CallData;
-import org.txedt.interpreter.Interpreter;
-import org.txedt.libs.IO;
-import org.txedt.libs.Std;
-import org.txedt.parser.Backtrace;
-import org.txedt.parser.Node;
-import org.txedt.parser.Parser;
+import org.txedt.lang.contexts.Context;
+import org.txedt.lang.errors.TxedtThrowable;
+import org.txedt.lang.interpreter.CallData;
+import org.txedt.lang.interpreter.Interpreter;
+import org.txedt.lang.libs.IO;
+import org.txedt.lang.libs.Std;
+import org.txedt.lang.parser.Backtrace;
+import org.txedt.lang.parser.Node;
+import org.txedt.lang.parser.Parser;
+import org.txedt.windowing.Windowing;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -44,13 +45,16 @@ public class Main {
         var globals = new Context()
                 .parent(IO.ctx)
                 .parent(Std.ctx);
+        globals.put("std", Std.ctx);
+        globals.put("io", IO.ctx);
+        globals.put("windowing", Windowing.ctx);
 
         List<Node> nodes;
         try {
-            var backtrace = new Backtrace();
+            var backtrace = new Backtrace("<global>", null);
             nodes = Parser.parse(backtrace, file, text);
-            var data = new CallData(backtrace, globals);
             for (var stmt : nodes) {
+                var data = new CallData(Backtrace.sameWith(backtrace, stmt.bounds), globals);
                 Interpreter.eval(stmt, data);
             }
         } catch (TxedtThrowable e) {

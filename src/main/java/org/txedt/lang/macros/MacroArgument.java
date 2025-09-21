@@ -1,13 +1,13 @@
-package org.txedt.macros;
+package org.txedt.lang.macros;
 
 import org.jetbrains.annotations.NotNull;
-import org.txedt.contexts.Context;
-import org.txedt.errors.TxedtError;
-import org.txedt.errors.TxedtThrowable;
-import org.txedt.general.TxedtBool;
-import org.txedt.parser.Backtrace;
-import org.txedt.parser.Bounds;
-import org.txedt.parser.Node;
+import org.txedt.lang.contexts.Context;
+import org.txedt.lang.errors.TxedtError;
+import org.txedt.lang.errors.TxedtThrowable;
+import org.txedt.lang.general.TxedtBool;
+import org.txedt.lang.parser.Backtrace;
+import org.txedt.lang.parser.Bounds;
+import org.txedt.lang.parser.Node;
 
 import java.util.ArrayList;
 import java.util.List;

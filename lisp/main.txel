@@ -14,6 +14,34 @@
     (windowing:rect window 0 0 (windowing:width window) (windowing:height window) color)
 )
 
+(defn font-group (name size)
+    (progp
+        (var name name)
+        (var size size)
+
+        (var normal (windowing:font name windowing:normal size))
+        (var italic (windowing:font name windowing:italic size))
+        (var bold (windowing:font name windowing:bold size))
+        (var bold-italic (windowing:font name (| windowing:bold windowing:italic) size))
+
+        (this-ctx)
+    )
+)
+
+(defn set-font-group-size (fg size)
+    (when (= fg:size size) (return))
+    (set fg:size size)
+    (set fg:normal (windowing:derive-font-size fg:normal size))
+    (set fg:italic (windowing:derive-font-size fg:italic size))
+    (set fg:bold (windowing:derive-font-size fg:bold size))
+    (set fg:bold-italic (windowing:derive-font-size fg:bold-italic size))
+)
+
+(var font (font-group "Menlo" 10))
+(var selected font:normal)
+
+(var time 0)
+(var timer 40)
 (loop
     (when (windowing:closed window) (return))
 
@@ -21,8 +49,18 @@
         (bg window (windowing:color 255 255 255))
         (let ((i 0)) (loop
             (unless (< i (list-len lines)) (return))
-            (windowing:text window (list-idx lines i) 0 (* 14 (1+ i)) (windowing:color 0 0 0))
+            (windowing:text window selected (| windowing:top windowing:left) (list-idx lines i) 0 (* font:size i) (windowing:color 0 0 0))
             (set i (1+ i))
+        ))
+    )
+
+    (let ((mod (% (set time (1+ time)) timer)))
+        (when (zero? mod) (set-font-group-size font (+ 2 font:size)))
+        (set selected (cond
+            ((<= mod (* timer 0.25)) font:normal)
+            ((<= mod (* timer 0.50)) font:bold)
+            ((<= mod (* timer 0.75)) font:italic)
+            (t font:bold-italic)
         ))
     )
 

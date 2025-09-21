@@ -1,10 +1,10 @@
-package org.txedt.macros;
+package org.txedt.lang.macros;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.txedt.errors.TxedtThrowable;
-import org.txedt.interpreter.CallData;
-import org.txedt.parser.Node;
+import org.txedt.lang.errors.TxedtThrowable;
+import org.txedt.lang.interpreter.CallData;
+import org.txedt.lang.parser.Node;
 
 public final class ExternalMacro extends MacroValue {
     public final @NotNull MacroImpl impl;

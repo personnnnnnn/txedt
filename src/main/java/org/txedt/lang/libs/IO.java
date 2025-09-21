@@ -1,9 +1,9 @@
-package org.txedt.libs;
+package org.txedt.lang.libs;
 
-import org.txedt.contexts.Context;
-import org.txedt.functions.ExternalFunction;
-import org.txedt.functions.signature.FunctionSignature;
-import org.txedt.general.TxedtStr;
+import org.txedt.lang.contexts.Context;
+import org.txedt.lang.functions.ExternalFunction;
+import org.txedt.lang.functions.signature.FunctionSignature;
+import org.txedt.lang.general.TxedtStr;
 
 import java.util.Scanner;
 

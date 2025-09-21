@@ -1,4 +1,4 @@
-package org.txedt.macros;
+package org.txedt.lang.macros;
 
 import org.jetbrains.annotations.NotNull;
 
